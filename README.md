@@ -1,3 +1,4 @@
+- ✨ Relentless perseverence in what we can, want and should control. Everything else is unimportant.
 - 🌱 I’m currently learning
   - React
   - MErn 
@@ -6,7 +7,7 @@
   - .NET developement
 - 💞️ I’m looking to collaborate on ANYTHING THAT PROVIDES VALUE TO THE WORLD!
 - 📫 How to reach me: social media / email.
-- ✨ Relentless perseverence in what we can, want and should control. Everything else is unimportant.
+
 
 <!---
 MateiDumitrescu1/MateiDumitrescu1 is a ✨ special ✨ repository because its `README.md` (this file) appears on your GitHub profile.
