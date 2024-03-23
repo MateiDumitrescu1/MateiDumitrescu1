@@ -1,8 +1,8 @@
 - 🌱 I’m currently learning
-      React
-      complex SCSS effects
-      Back-end developement and DBMS organization
-      .NET developement
+  - React
+  - complex SCSS effects
+  - Back-end developement and DBMS organization
+  - .NET developement
 - 💞️ I’m looking to collaborate on ANYTHING THAT PROVIDES VALUE TO THE WORLD!
 - 📫 How to reach me: social media / email.
 - ✨ Relentless perseverence in what we want, can and should control. Everything else is unimportant.
