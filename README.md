@@ -1,5 +1,6 @@
 - 🌱 I’m currently learning
   - React
+  - MErn 
   - complex SCSS effects
   - Back-end developement and DBMS organization
   - .NET developement
