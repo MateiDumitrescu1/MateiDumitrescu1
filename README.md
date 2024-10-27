@@ -1,4 +1,4 @@
-- ✨ Relentless perseverence in what we can, want and should control. Everything else is unimportant.
+✨ Relentless perseverence in what we can, want and should control. Everything else is unimportant.
 
 
 
