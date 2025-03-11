@@ -3,6 +3,11 @@ Currently working on:
 📊 https://github.com/MateiDumitrescu1/DEVML -> data collection tools  
 👁️‍🗨️ https://github.com/MateiDumitrescu1/Eye_of_God -> Eye of God  
 
+<!-- LOC_START -->
+![Lines of Code](https://img.shields.io/badge/Total%20Lines%20of%20Code-Loading...-blue)
+<!-- LOC_END -->
+
+
 ✨ Relentless perseverence in what we can, want and should control. Everything else is unimportant.
 
 
