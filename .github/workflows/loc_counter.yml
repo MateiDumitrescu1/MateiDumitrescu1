@@ -1,0 +1,44 @@
+name: Update Lines of Code Count
+
+on:
+    schedule:
+        - cron: "0 0 * * *" # Runs every day at midnight UTC
+    workflow_dispatch: # Allows manual trigger
+
+jobs:
+    count_lines:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Install dependencies
+              run: sudo apt update && sudo apt install -y git cloc jq
+
+            - name: Clone all repos and count lines
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  mkdir repos && cd repos
+                  gh repo list ${{ github.actor }} --limit 100 --json nameWithOwner | jq -r '.[].nameWithOwner' | while read repo; do
+                    git clone --depth 1 https://github.com/$repo
+                  done
+                  TOTAL_LOC=$(cloc --vcs=git --sum-one . | awk '/SUM:/{print $NF}')
+                  echo "Total lines of code: $TOTAL_LOC"
+                  echo "LOC=$TOTAL_LOC" >> $GITHUB_ENV
+            - name: print result
+              run: echo $LOC
+            # - name: Update README
+            #   run: |
+            #       sed -i "/<!-- LOC_START -->/,/<!-- LOC_END -->/c\
+            #       <!-- LOC_START -->\n\
+            #       ![Lines of Code](https://img.shields.io/badge/Total%20Lines%20of%20Code-$LOC-blue)\n\
+            #       <!-- LOC_END -->" README.md
+
+            # - name: Commit and push changes
+            #   run: |
+            #       git config --global user.name "github-actions[bot]"
+            #       git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            #       git add README.md
+            #       git commit -m "Update lines of code count" || exit 0
+            #       git push
