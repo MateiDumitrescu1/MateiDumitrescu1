@@ -1,44 +1,35 @@
-name: Update Lines of Code Count
+name: Count Lines of Code per Language
 
 on:
-    schedule:
-        - cron: "0 0 * * *" # Runs every day at midnight UTC
-    workflow_dispatch: # Allows manual trigger
+    workflow_dispatch:
 
 jobs:
     count_lines:
         runs-on: ubuntu-latest
         steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
+            - name: Setup Environment
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y cloc jq git
 
-            - name: Install dependencies
-              run: sudo apt update && sudo apt install -y git cloc jq
-
-            - name: Clone all repos and count lines
+            - name: Clone Repositories
               env:
-                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
                   mkdir repos && cd repos
-                  gh repo list ${{ github.actor }} --limit 100 --json nameWithOwner | jq -r '.[].nameWithOwner' | while read repo; do
-                    git clone --depth 1 https://github.com/$repo
+                  echo "Fetching repositories..."
+                  curl -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/user/repos?per_page=100" > repos.json
+                  for repo in $(jq -r '.[].clone_url' repos.json); do
+                    echo "Cloning $repo"
+                    git clone --depth 1 "$repo"
                   done
-                  TOTAL_LOC=$(cloc --vcs=git --sum-one . | awk '/SUM:/{print $NF}')
-                  echo "Total lines of code: $TOTAL_LOC"
-                  echo "LOC=$TOTAL_LOC" >> $GITHUB_ENV
-            - name: print result
-              run: echo $LOC
-            # - name: Update README
-            #   run: |
-            #       sed -i "/<!-- LOC_START -->/,/<!-- LOC_END -->/c\
-            #       <!-- LOC_START -->\n\
-            #       ![Lines of Code](https://img.shields.io/badge/Total%20Lines%20of%20Code-$LOC-blue)\n\
-            #       <!-- LOC_END -->" README.md
 
-            # - name: Commit and push changes
-            #   run: |
-            #       git config --global user.name "github-actions[bot]"
-            #       git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            #       git add README.md
-            #       git commit -m "Update lines of code count" || exit 0
-            #       git push
+            - name: Count Lines of Code per Language
+              run: |
+                  echo "Running cloc on all repositories..."
+                  # Run cloc on the repos directory and output in JSON format.
+                  cloc_output=$(cloc repos --json)
+                  echo "$cloc_output" > cloc.json
+                  echo "Total lines of code per language:"
+                  # Filter out the header and SUM fields and display only language entries.
+                  jq 'to_entries | map(select(.key != "header" and .key != "SUM:")) | .[] | "\(.key): \(.value.code)"' cloc.json
