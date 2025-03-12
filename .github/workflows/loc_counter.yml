@@ -18,26 +18,15 @@ jobs:
               run: |
                   mkdir repos && cd repos
                   echo "Fetching repositories..."
-                  # Use silent mode with curl
-                  curl -s -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/user/repos?per_page=100" > repos.json
-                  # Verify that the JSON is an array before processing
-                  if jq -e 'if type=="array" then . else empty end' repos.json > /dev/null; then
-                    for repo in $(jq -r '.[].clone_url' repos.json); do
-                      echo "Cloning $repo"
-                      git clone --depth 1 "$repo"
-                    done
-                  else
-                    echo "Error: Unexpected JSON structure in repos.json"
-                    cat repos.json
-                    exit 1
-                  fi
+                  curl -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/user/repos?per_page=100" > repos.json
+                  for repo in $(jq -r '.[].clone_url' repos.json); do
+                    echo "Cloning $repo"
+                    git clone --depth 1 "$repo"
+                  done
 
-            - name: Count Lines of Code per Language
+            - name: Print cloc JSON for Each Repository
               run: |
-                  echo "Running cloc on all repositories..."
-                  # Run cloc on the repos directory with JSON output
-                  cloc_output=$(cloc repos --json)
-                  echo "$cloc_output" > cloc.json
-                  echo "Total lines of code per language:"
-                  # Filter out metadata (header and SUM:) and display each language's code count
-                  jq 'to_entries | map(select(.key != "header" and .key != "SUM:")) | .[] | "\(.key): \(.value.code)"' cloc.json
+                  for repo in repos/*; do
+                    echo "Processing repository: $repo"
+                    cloc "$repo" --json
+                  done
